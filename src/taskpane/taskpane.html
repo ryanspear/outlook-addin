@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Outlook Dev Add-in</title>
+    <title>Loan Email Parser Add-in</title>
     
     <!-- Office.js -->
     <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
@@ -18,6 +18,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
         }
 
         .ms-welcome {
@@ -29,8 +30,8 @@
         }
 
         .ms-welcome__header {
-            min-height: 150px;
-            padding: 20px;
+            min-height: 120px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -41,23 +42,25 @@
 
         .ms-welcome__main {
             flex-grow: 1;
-            padding: 30px 20px;
+            padding: 20px 15px;
         }
 
-        .ms-welcome__main > h2 {
-            margin-bottom: 20px;
+        .section-header {
+            margin: 20px 0 10px 0;
             color: #323130;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
+            border-bottom: 2px solid #0078d4;
+            padding-bottom: 5px;
         }
 
         .ms-welcome__action {
-            margin: 15px 0;
+            margin: 10px 0;
         }
 
-        .ms-welcome__features {
-            margin-top: 30px;
-            padding: 20px;
+        .extracted-info {
+            margin-top: 20px;
+            padding: 15px;
             background-color: #faf9f8;
             border-radius: 4px;
             border: 1px solid #edebe9;
@@ -69,14 +72,15 @@
             text-align: center;
             cursor: pointer;
             border: 1px solid #0078d4;
-            padding: 10px 20px;
-            min-width: 120px;
+            padding: 8px 16px;
+            min-width: 100px;
             background-color: #0078d4;
             color: white;
             border-radius: 2px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             transition: background-color 0.2s;
+            margin: 5px;
         }
 
         .ms-Button:hover {
@@ -88,19 +92,31 @@
             background-color: #005a9e;
         }
 
+        .ms-Button--secondary {
+            background-color: #ffffff;
+            color: #323130;
+            border-color: #8a8886;
+        }
+
+        .ms-Button--secondary:hover {
+            background-color: #f3f2f1;
+            color: #201f1e;
+        }
+
         .ms-font-su {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 300;
             color: #323130;
-            margin: 15px 0;
+            margin: 10px 0;
         }
 
         #item-subject, #item-from, #item-date {
-            margin: 10px 0;
-            padding: 12px;
+            margin: 8px 0;
+            padding: 10px;
             background-color: #f8f8f8;
             border-left: 4px solid #0078d4;
             border-radius: 0 4px 4px 0;
+            font-size: 13px;
         }
 
         #result-area {
@@ -108,38 +124,100 @@
             overflow-y: auto;
         }
 
-        #result-text p {
-            margin: 8px 0;
-            padding: 10px;
+        .info-section {
+            margin: 15px 0;
+            padding: 12px;
             background-color: white;
             border: 1px solid #edebe9;
             border-radius: 4px;
-            font-size: 13px;
+        }
+
+        .info-section h4 {
+            margin: 0 0 10px 0;
+            color: #0078d4;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .info-item {
+            margin: 5px 0;
+            padding: 6px 8px;
+            background-color: #f8f9fa;
+            border-radius: 3px;
+            font-size: 12px;
+            border-left: 3px solid #28a745;
+        }
+
+        .info-item.not-found {
+            border-left-color: #dc3545;
+            color: #6c757d;
         }
 
         .logo-placeholder {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background-color: #0078d4;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
+        }
+
+        .parsing-status {
+            margin: 10px 0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .parsing-status.loading {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .parsing-status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .parsing-status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .companies-house-link {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 4px 8px;
+            background-color: #0078d4;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .companies-house-link:hover {
+            background-color: #106ebe;
+            color: white;
         }
     </style>
 </head>
 
 <body class="ms-welcome">
     <header class="ms-welcome__header">
-        <div class="logo-placeholder">OA</div>
-        <h1 class="ms-font-su">Outlook Development Add-in</h1>
+        <div class="logo-placeholder">LP</div>
+        <h1 class="ms-font-su">Loan Parser Add-in</h1>
     </header>
     
     <main class="ms-welcome__main">
-        <h2>Email Information</h2>
+        <div class="section-header">Email Information</div>
         <div id="item-subject">
             <strong>Subject:</strong> <span id="subject-text">Loading...</span>
         </div>
@@ -150,20 +228,45 @@
             <strong>Date:</strong> <span id="date-text">Loading...</span>
         </div>
         
+        <div class="section-header">Email Analysis</div>
         <div class="ms-welcome__action">
-            <button class="ms-Button" id="get-properties-button">
-                Get Email Properties
+            <button class="ms-Button" id="parse-email-button">
+                🔍 Parse Email Content
+            </button>
+            <button class="ms-Button ms-Button--secondary" id="get-properties-button">
+                📋 Email Properties
             </button>
         </div>
         
-        <div class="ms-welcome__action">
-            <button class="ms-Button" id="compose-reply-button">
-                Compose Reply
-            </button>
+        <div id="parsing-status" class="parsing-status" style="display: none;"></div>
+        
+        <div id="extracted-info" class="extracted-info" style="display: none;">
+            <div class="section-header">Extracted Information</div>
+            
+            <div class="info-section">
+                <h4>👤 Loan Applicant Details</h4>
+                <div id="applicant-info">
+                    <div class="info-item not-found">No applicant information found</div>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h4>🏠 Property Details</h4>
+                <div id="property-info">
+                    <div class="info-item not-found">No property information found</div>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h4>🏢 Company Details</h4>
+                <div id="company-info">
+                    <div class="info-item not-found">No company information found</div>
+                </div>
+            </div>
         </div>
         
-        <div id="result-area" class="ms-welcome__features">
-            <h3>Results</h3>
+        <div id="result-area" class="extracted-info" style="display: none;">
+            <div class="section-header">Results</div>
             <div id="result-text">Click a button to see results here...</div>
         </div>
     </main>
