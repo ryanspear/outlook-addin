@@ -22,27 +22,43 @@ Office.onReady((info) => {
  * Load initial email data when taskpane opens
  */
 function loadInitialData() {
-  Office.context.mailbox.item.subject.getAsync((result) => {
-    if (result.status === Office.AsyncResultStatus.Succeeded) {
-      document.getElementById("subject-text").textContent = result.value || "No subject";
+  try {
+    const item = Office.context.mailbox.item;
+    
+    // Get subject - this is a direct property, not async
+    if (item.subject) {
+      document.getElementById("subject-text").textContent = item.subject || "No subject";
     }
-  });
 
-  // Get sender information
-  if (Office.context.mailbox.item.from) {
-    Office.context.mailbox.item.from.getAsync((result) => {
-      if (result.status === Office.AsyncResultStatus.Succeeded) {
-        const from = result.value;
-        document.getElementById("from-text").textContent = 
-          from.displayName ? `${from.displayName} (${from.emailAddress})` : from.emailAddress;
-      }
-    });
-  }
+    // Get sender information - this IS async
+    if (item.from) {
+      item.from.getAsync((result) => {
+        if (result.status === Office.AsyncResultStatus.Succeeded) {
+          const from = result.value;
+          document.getElementById("from-text").textContent = 
+            from.displayName ? `${from.displayName} (${from.emailAddress})` : from.emailAddress;
+        } else {
+          document.getElementById("from-text").textContent = "Unable to load sender info";
+        }
+      });
+    } else {
+      // Fallback for compose mode or when from is not available
+      document.getElementById("from-text").textContent = "Not available in compose mode";
+    }
 
-  // Get date
-  if (Office.context.mailbox.item.dateTimeCreated) {
-    const date = Office.context.mailbox.item.dateTimeCreated;
-    document.getElementById("date-text").textContent = date.toLocaleDateString();
+    // Get date - this is also a direct property
+    if (item.dateTimeCreated) {
+      const date = item.dateTimeCreated;
+      document.getElementById("date-text").textContent = date.toLocaleDateString();
+    } else {
+      document.getElementById("date-text").textContent = "Date not available";
+    }
+    
+  } catch (error) {
+    console.error("Error loading initial data:", error);
+    document.getElementById("subject-text").textContent = "Error loading data";
+    document.getElementById("from-text").textContent = "Error loading data";
+    document.getElementById("date-text").textContent = "Error loading data";
   }
 }
 
@@ -50,40 +66,67 @@ function loadInitialData() {
  * Get detailed email properties
  */
 function getItemProperties() {
-  const item = Office.context.mailbox.item;
-  let properties = [];
+  try {
+    const item = Office.context.mailbox.item;
+    let properties = [];
 
-  // Basic properties
-  properties.push(`Item Type: ${item.itemType}`);
-  properties.push(`Item ID: ${item.itemId || 'Not available'}`);
-  
-  // Get conversation ID
-  if (item.conversationId) {
-    properties.push(`Conversation ID: ${item.conversationId}`);
-  }
+    // Basic properties - these are direct properties
+    properties.push(`Item Type: ${item.itemType}`);
+    properties.push(`Item ID: ${item.itemId || 'Not available'}`);
+    properties.push(`Subject: ${item.subject || 'No subject'}`);
+    
+    // Get conversation ID
+    if (item.conversationId) {
+      properties.push(`Conversation ID: ${item.conversationId}`);
+    }
 
-  // Get categories
-  if (item.categories) {
-    item.categories.getAsync((result) => {
-      if (result.status === Office.AsyncResultStatus.Succeeded) {
-        const categories = result.value.length > 0 ? result.value.join(', ') : 'None';
-        properties.push(`Categories: ${categories}`);
-        updateResultArea(properties);
-      }
-    });
-  } else {
-    updateResultArea(properties);
-  }
+    // Get categories - this IS async
+    if (item.categories && typeof item.categories.getAsync === 'function') {
+      item.categories.getAsync((result) => {
+        if (result.status === Office.AsyncResultStatus.Succeeded) {
+          const categories = result.value && result.value.length > 0 ? result.value.join(', ') : 'None';
+          properties.push(`Categories: ${categories}`);
+          updateResultArea(properties);
+        } else {
+          properties.push(`Categories: Unable to load`);
+          updateResultArea(properties);
+        }
+      });
+    } else {
+      properties.push(`Categories: Not available`);
+      updateResultArea(properties);
+    }
 
-  // Get body preview
-  if (item.body) {
-    item.body.getAsync(Office.CoercionType.Text, { asyncContext: properties }, (result) => {
-      if (result.status === Office.AsyncResultStatus.Succeeded) {
-        const bodyPreview = result.value.substring(0, 200) + '...';
-        result.asyncContext.push(`Body Preview: ${bodyPreview}`);
-        updateResultArea(result.asyncContext);
-      }
-    });
+    // Get body preview - this IS async
+    if (item.body && typeof item.body.getAsync === 'function') {
+      item.body.getAsync(Office.CoercionType.Text, { asyncContext: properties }, (result) => {
+        if (result.status === Office.AsyncResultStatus.Succeeded) {
+          const bodyPreview = result.value.substring(0, 200) + '...';
+          result.asyncContext.push(`Body Preview: ${bodyPreview}`);
+          updateResultArea(result.asyncContext);
+        } else {
+          result.asyncContext.push(`Body Preview: Unable to load`);
+          updateResultArea(result.asyncContext);
+        }
+      });
+    } else {
+      properties.push(`Body Preview: Not available`);
+      updateResultArea(properties);
+    }
+
+    // Add attachment info
+    if (item.attachments && item.attachments.length > 0) {
+      const attachmentInfo = item.attachments.map(att => 
+        `${att.name} (${att.attachmentType})`
+      ).join(', ');
+      properties.push(`Attachments: ${attachmentInfo}`);
+    } else {
+      properties.push(`Attachments: None`);
+    }
+
+  } catch (error) {
+    console.error("Error getting item properties:", error);
+    updateResultArea([`Error: ${error.message}`]);
   }
 }
 
