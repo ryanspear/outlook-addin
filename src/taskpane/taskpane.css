@@ -1,0 +1,115 @@
+/* Office UI Fabric styling */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.ms-welcome {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    min-height: 100vh;
+}
+
+.ms-welcome__header {
+    min-height: 250px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f2f1;
+}
+
+.ms-welcome__main {
+    flex-grow: 1;
+    padding: 30px 20px;
+}
+
+.ms-welcome__main > h2 {
+    margin-bottom: 20px;
+    color: #323130;
+}
+
+.ms-welcome__action {
+    margin: 20px 0;
+}
+
+.ms-welcome__features {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #faf9f8;
+    border-radius: 4px;
+}
+
+.ms-Button {
+    display: inline-block;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid transparent;
+    padding: 8px 32px;
+    min-width: 80px;
+    background-color: #0078d4;
+    color: white;
+    border-radius: 2px;
+    font-size: 14px;
+}
+
+.ms-Button:hover {
+    background-color: #106ebe;
+}
+
+.ms-Button--hero {
+    background-color: #0078d4;
+    border-color: #0078d4;
+    font-weight: 600;
+    min-height: 32px;
+}
+
+.ms-font-xl {
+    font-size: 18px;
+}
+
+.ms-font-l {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.ms-font-m {
+    font-size: 14px;
+}
+
+.ms-font-su {
+    font-size: 24px;
+    font-weight: 300;
+    color: #323130;
+    margin: 20px 0;
+}
+
+#item-subject,
+#item-from,
+#item-date {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border-left: 4px solid #0078d4;
+}
+
+#result-area {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#result-text p {
+    margin: 8px 0;
+    padding: 8px;
+    background-color: white;
+    border: 1px solid #edebe9;
+    border-radius: 4px;
+}

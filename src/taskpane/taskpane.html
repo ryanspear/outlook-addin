@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Outlook Dev Add-in</title>
+    
+    <!-- Office.js -->
+    <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    
+    <!-- Inline CSS to ensure it loads -->
+    <style>
+        /* Office UI Fabric styling */
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .ms-welcome {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            min-height: 100vh;
+        }
+
+        .ms-welcome__header {
+            min-height: 150px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f3f2f1;
+            border-bottom: 1px solid #edebe9;
+        }
+
+        .ms-welcome__main {
+            flex-grow: 1;
+            padding: 30px 20px;
+        }
+
+        .ms-welcome__main > h2 {
+            margin-bottom: 20px;
+            color: #323130;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .ms-welcome__action {
+            margin: 15px 0;
+        }
+
+        .ms-welcome__features {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #faf9f8;
+            border-radius: 4px;
+            border: 1px solid #edebe9;
+        }
+
+        .ms-Button {
+            display: inline-block;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid #0078d4;
+            padding: 10px 20px;
+            min-width: 120px;
+            background-color: #0078d4;
+            color: white;
+            border-radius: 2px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .ms-Button:hover {
+            background-color: #106ebe;
+            border-color: #106ebe;
+        }
+
+        .ms-Button:active {
+            background-color: #005a9e;
+        }
+
+        .ms-font-su {
+            font-size: 20px;
+            font-weight: 300;
+            color: #323130;
+            margin: 15px 0;
+        }
+
+        #item-subject, #item-from, #item-date {
+            margin: 10px 0;
+            padding: 12px;
+            background-color: #f8f8f8;
+            border-left: 4px solid #0078d4;
+            border-radius: 0 4px 4px 0;
+        }
+
+        #result-area {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        #result-text p {
+            margin: 8px 0;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #edebe9;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .logo-placeholder {
+            width: 60px;
+            height: 60px;
+            background-color: #0078d4;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body class="ms-welcome">
+    <header class="ms-welcome__header">
+        <div class="logo-placeholder">OA</div>
+        <h1 class="ms-font-su">Outlook Development Add-in</h1>
+    </header>
+    
+    <main class="ms-welcome__main">
+        <h2>Email Information</h2>
+        <div id="item-subject">
+            <strong>Subject:</strong> <span id="subject-text">Loading...</span>
+        </div>
+        <div id="item-from">
+            <strong>From:</strong> <span id="from-text">Loading...</span>
+        </div>
+        <div id="item-date">
+            <strong>Date:</strong> <span id="date-text">Loading...</span>
+        </div>
+        
+        <div class="ms-welcome__action">
+            <button class="ms-Button" id="get-properties-button">
+                Get Email Properties
+            </button>
+        </div>
+        
+        <div class="ms-welcome__action">
+            <button class="ms-Button" id="compose-reply-button">
+                Compose Reply
+            </button>
+        </div>
+        
+        <div id="result-area" class="ms-welcome__features">
+            <h3>Results</h3>
+            <div id="result-text">Click a button to see results here...</div>
+        </div>
+    </main>
+</body>
+</html>
